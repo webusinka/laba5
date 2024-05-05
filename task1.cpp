@@ -13,7 +13,7 @@ struct Shelve { //ячейки и продукты в ней
 
 struct Warehouse {
     int current_number; //текущая загруженность склада          (0)
-    const int capacity; //общая вместимость склада             (640)
+    const int capacity; //количество полочек                    (64)
     const int number_of_zones; //количество зон                 (4)
     const int number_of_rocks; //стеллажи                       (8)
     const int number_of_vertical_section; //вертикальная секция (2)
@@ -76,8 +76,8 @@ void add (string name, int count, string cell, struct Warehouse& warehouse) {
     if (indexies.first == -1) {
         return;
 
-    } else if (10 - warehouse.cells[indexies.second].current_number < count) {
-        cout << "Wrotng input, lack of space for your product" << std::endl;
+    } else if (10 - warehouse.cells[indexies.first].current_number < count) {
+        cout << "Wrotng input, lack of space for your product" << endl;
         return;
 
     } else {
@@ -97,8 +97,8 @@ void remove(string name, int count, string cell, struct Warehouse& warehouse) {
     if (indexies.first == -1) {
         return;
 
-    } else if (warehouse.cells[indexies.second].current_number < count) {
-        std::cout << "Wrotng input, too big number" << std::endl;
+    } else if (warehouse.cells[indexies.first].current_number < count) {
+        cout << "Wrotng input, too big number" << endl;
         return;
 
     } else {
@@ -113,7 +113,7 @@ void remove(string name, int count, string cell, struct Warehouse& warehouse) {
         warehouse.load_of_zones[indexies.second] -= count;
         warehouse.current_number -= count;
 
-        std::cout << "Seccesfull removing" << std::endl;
+        cout << "Seccesfull removing" << endl;
         return;
     }
 }
@@ -123,18 +123,19 @@ int info(struct Warehouse& warehouse) {
     cout << "Load of warehouse: " << warehouse.current_number << " / " << warehouse.capacity << endl;
 
     //процент заполнения каждой зоны
+    cout << "Load of zone: " << endl;
     for (int i = 0; i < warehouse.load_of_zones.size(); i++) {
         if (i == 0) {
-            cout << "Zone A: " << warehouse.load_of_zones[i] << endl;
+            cout << "\tZone A: " << warehouse.load_of_zones[i] << endl;
 
         } else if (i == 1){
-            cout << "Zone B: " << warehouse.load_of_zones[i] << endl;
+            cout << "\tZone B: " << warehouse.load_of_zones[i] << endl;
 
         } else if (i == 2){
-            cout << "Zone C: " << warehouse.load_of_zones[i] << endl;
+            cout << "\tZone C: " << warehouse.load_of_zones[i] << endl;
 
         } else {
-            cout << "Zone D: " << warehouse.load_of_zones[i] << endl;
+            cout << "\tZone D: " << warehouse.load_of_zones[i] << endl;
        }
     }
 
@@ -143,49 +144,36 @@ int info(struct Warehouse& warehouse) {
     int index = 0;
     vector<string> empty_cell;     //вывести все пустые ячейки
 
+    cout << endl;
     for (int zone = 0; zone < warehouse.number_of_zones; zone++) { //формируем в строке зону
-        char ch = 'A' + zone;
-        cell_address += ch;
+        char ch_zone = 'A' + zone;
 
         for (int rock = 1; rock <= warehouse.number_of_rocks; rock++) { //добавляем номер стелажа
-            cell_address += to_string(rock);
 
             for (int vertical_section = 1; vertical_section <= warehouse.number_of_vertical_section; vertical_section++) {
-                cell_address += to_string(vertical_section); //добавляем номер вертикальной секции
+                 //добавляем номер вертикальной секции
 
                 for (int shelves = 1; shelves <= warehouse.number_of_shelves; shelves++){  //добавляем номер ячейки
-                    cell_address += to_string(shelves);
+                    cell_address = ch_zone + to_string(rock) + to_string(vertical_section) + to_string(shelves);
 
-                    if (warehouse.cells[index].product.size() == 0){
-                        empty_cell.push_back(cell_address);
-                        cell_address = "";
-                        cell_address += ch;
+                    if (warehouse.cells[index].current_number == 0){
+                        empty_cell.push_back(cell_address); //запомни пустую ячейку
 
                     } else {
-                        for (const auto& cell_iterator: warehouse.cells[index].product) {
-                            cout << "Cells " << cell_address << " "<< cell_iterator.first << " = " << cell_iterator.second << endl;
-                            cell_address = "";
-                            cell_address += ch; 
-                            cell_address += to_string(shelves);      
+                        for (const auto& cell_iterator: warehouse.cells[index].product) { //выведи не пустые
+                            cout << "Cells " << cell_address << " "<< cell_iterator.first << " = " << cell_iterator.second << endl;     
                         }
                     }
                     index++;
                 }
-                //запоминаем зону и вертикальная секция
-                cell_address = "";
-                cell_address += ch;
-                cell_address += to_string(rock);
             }
-            //запомнить только зону
-            cell_address = "";
-            cell_address += ch;
         }
-        //обнулить строку вообще
-        cell_address = "";
     }
 
+    //пустые ячейки
+    cout << " Empty cells: ";
     for(auto void_cell: empty_cell) {
-        cout << void_cell << ", ";
+        cout << void_cell << " ";
     }
     cout << endl;
 
@@ -193,13 +181,16 @@ int info(struct Warehouse& warehouse) {
 }
 
 int main() {
-    Warehouse wildberries{ 0, 640, 4, 8, 2, 1};
+    Warehouse wildberries{ 0, 64, 4, 8, 2, 1};
     create_space(&wildberries);
+    //add("Tomato", 4, "A821", wildberries);
+    //add("Tomato", 8, "A821", wildberries);
 
     cout << "Enter one of the commands:" << endl;
     cout << "\tADD - product, quantity and cell;" << endl;
     cout << "\tREMOVE - product, quantity and cell;" << endl;
-    cout << "\tINFO - information about the status of the warehouse." << endl;
+    cout << "\tINFO - information about the status of the warehouse;" << endl;
+    cout << "\tEXIT - completion of the program." << endl;
 
     while(true){
         string input;
@@ -231,10 +222,12 @@ int main() {
         } else if (command == "INFO") {
             info(wildberries);
 
+        } else if (command == "EXIT") {
+            return 0;
+
         } else {
-            cout << "Wrong input, sorry, but you will not pass!!!";
-        }
-        
+            cout << "Wrong input, sorry, but you will not pass!!!" << endl;
+        } 
     }
     return 0;
 }
