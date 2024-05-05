@@ -3,6 +3,7 @@
 #include <vector>
 #include <map>
 #include <sstream>
+#include <limits>
 using namespace std;
 
 struct Shelve { //ячейки и продукты в ней
@@ -11,12 +12,12 @@ struct Shelve { //ячейки и продукты в ней
 };
 
 struct Warehouse {
-    int current_number; //текущая загруженность склада
-    const int capacity; //общая вместимость склада
-    const int number_of_zones; //количество зон
-    const int number_of_rocks; //стеллажи
-    const int number_of_vertical_section; //вертикальная секция
-    const int number_of_shelves; //полка
+    int current_number; //текущая загруженность склада          (0)
+    const int capacity; //общая вместимость склада             (640)
+    const int number_of_zones; //количество зон                 (4)
+    const int number_of_rocks; //стеллажи                       (8)
+    const int number_of_vertical_section; //вертикальная секция (2)
+    const int number_of_shelves; //полка                        (1)
 
     vector<int> load_of_zones; //загруженность зон
     vector<Shelve> cells; //ячеечки
@@ -69,7 +70,7 @@ pair<int, int> search_index(int count, string cell, struct Warehouse& warehouse)
     return result;
 }
 
-void add(string name, int count, string cell, struct Warehouse& warehouse) {
+void add (string name, int count, string cell, struct Warehouse& warehouse) {
     pair<int, int> indexies = search_index(count, cell, warehouse);
 
     if (indexies.first == -1) {
@@ -118,9 +119,8 @@ void remove(string name, int count, string cell, struct Warehouse& warehouse) {
 }
 
 int info(struct Warehouse& warehouse) {
-    //процент заполнения склада
-    double fill_warehouse = warehouse.capacity/ warehouse.current_number * 100;
-    cout << "Load of warehouse: " << fill_warehouse << " %" << endl;
+    //заполнения склада
+    cout << "Load of warehouse: " << warehouse.current_number << " / " << warehouse.capacity << endl;
 
     //процент заполнения каждой зоны
     for (int i = 0; i < warehouse.load_of_zones.size(); i++) {
@@ -135,13 +135,59 @@ int info(struct Warehouse& warehouse) {
 
         } else {
             cout << "Zone D: " << warehouse.load_of_zones[i] << endl;
-        }
+       }
     }
 
-    //в каждой зоне - вывести наполнение ячейки, если >1
-    //вывести все пустые ячейки
-    
+    //в каждой зоне - вывести наполнение ячейки, если > 1
+    string cell_address = "";
+    int index = 0;
+    vector<string> empty_cell;     //вывести все пустые ячейки
 
+    for (int zone = 0; zone < warehouse.number_of_zones; zone++) { //формируем в строке зону
+        char ch = 'A' + zone;
+        cell_address += ch;
+
+        for (int rock = 1; rock <= warehouse.number_of_rocks; rock++) { //добавляем номер стелажа
+            cell_address += to_string(rock);
+
+            for (int vertical_section = 1; vertical_section <= warehouse.number_of_vertical_section; vertical_section++) {
+                cell_address += to_string(vertical_section); //добавляем номер вертикальной секции
+
+                for (int shelves = 1; shelves <= warehouse.number_of_shelves; shelves++){  //добавляем номер ячейки
+                    cell_address += to_string(shelves);
+
+                    if (warehouse.cells[index].product.size() == 0){
+                        empty_cell.push_back(cell_address);
+                        cell_address = "";
+                        cell_address += ch;
+
+                    } else {
+                        for (const auto& cell_iterator: warehouse.cells[index].product) {
+                            cout << "Cells " << cell_address << " "<< cell_iterator.first << " = " << cell_iterator.second << endl;
+                            cell_address = "";
+                            cell_address += ch; 
+                            cell_address += to_string(shelves);      
+                        }
+                    }
+                    index++;
+                }
+                //запоминаем зону и вертикальная секция
+                cell_address = "";
+                cell_address += ch;
+                cell_address += to_string(rock);
+            }
+            //запомнить только зону
+            cell_address = "";
+            cell_address += ch;
+        }
+        //обнулить строку вообще
+        cell_address = "";
+    }
+
+    for(auto void_cell: empty_cell) {
+        cout << void_cell << ", ";
+    }
+    cout << endl;
 
     return 0;
 }
@@ -155,13 +201,13 @@ int main() {
     cout << "\tREMOVE - product, quantity and cell;" << endl;
     cout << "\tINFO - information about the status of the warehouse." << endl;
 
-    string input;
-    getline(cin, input);
-    istringstream iss(input);
-    string command;
-    iss >> command;
-
     while(true){
+        string input;
+        getline(cin, input);
+        istringstream iss(input);
+        string command;
+        iss >> command;
+
         if (command == "ADD") {
             string name_product;
             iss >> name_product;
@@ -188,6 +234,7 @@ int main() {
         } else {
             cout << "Wrong input, sorry, but you will not pass!!!";
         }
+        
     }
     return 0;
 }
