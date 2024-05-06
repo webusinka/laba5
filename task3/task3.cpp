@@ -26,10 +26,10 @@ int main() {
 		"(4) Отображение всех самолетов с их маршрутами" << endl <<
 		"(5) Выход из программы." << endl;
 
-	bool exit = true;
-	vector<string> towns;
-	vector<string> planes;
-	map <string, vector <string>> route;
+	bool exit = true;                    //для выхода
+	vector<string> towns;                //вектор городов
+	vector<string> planes;               //вектор самолетов
+	map <string, vector <string>> route; //вектор остановок
 
 	for (int i = 0; exit; i++) {     //считываем команду с клавиатуры
 		cout << "Введите команду: ";
@@ -46,7 +46,7 @@ int main() {
 			Towns_For_Plane(route);
 
 		} else if (command == planetown::PLANES) {
-			if (!route.empty()) {
+			if (!route.empty()) { //если не пустой - зайди в функцию
 				Planes(planes, route);
 
 			} else {
