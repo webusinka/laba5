@@ -15,15 +15,16 @@ void Make_Pair_Friends(map<string,vector<string>>& friends) {
 
 	for (string a : friends[name1]) {
 		if (a == name2) {
-			cout << "Пара уже была создана!" << endl; //не добавляй заново, что уже было создано
+			cout << "Пара УЖЕ была создана!" << endl; //не добавляй заново, что уже было создано
             return;
 		}
 	}
 	if (name1 == name2) {
 		cout << "Одинаковое имя, аккуратнее!" << endl;
+		return ;
 	}
 
 	friends[name1].push_back(name2);
 	friends[name2].push_back(name1);
-	cout << "Пара друзей была создана!"<< endl;
+	cout << "Пара создана!"<< endl;
 }

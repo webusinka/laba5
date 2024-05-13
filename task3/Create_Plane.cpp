@@ -38,6 +38,14 @@ void Create_Plane(vector<string>& towns, vector<string>& planes, map<string, vec
 
     new_towns.push_back(town); // последний город самолета не забудь закинуть
 
+    // Проверка наличия одинаковых городов в маршруте
+    sort(new_towns.begin(), new_towns.end());
+    if (adjacent_find(new_towns.begin(), new_towns.end()) != new_towns.end()) {
+        cout << "ОШИБКА: Введены одинаковые города. Пожалуйста, введите разные города.\n" << endl;
+        planes.pop_back(); //удаляем этот самолет
+        return;
+    }
+    
     // Проверка наличия маршрута с такими же остановками, но другим самолетом
     for (const auto& pair : route) {
         if (pair.second == new_towns && pair.first != plane) {

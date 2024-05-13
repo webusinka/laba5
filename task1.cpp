@@ -12,7 +12,7 @@ struct Shelve { //ячейки и продукты в ней
 };
 
 struct Warehouse {
-    int current_number; //текущая загруженность склада          (0)
+    double current_number; //текущая загруженность склада          (0)
     const int capacity; //количество полочек                    (64)
     const int number_of_zones; //количество зон                 (4)
     const int number_of_rocks; //стеллажи                       (8)
@@ -115,7 +115,7 @@ void remove(string name, int count, string cell, struct Warehouse& warehouse) {
     if (indexies.first == -1) {
         return;
 
-    } else if (warehouse.cells[indexies.first].current_number < count) {
+    } else if (warehouse.cells[indexies.first].product[name] < count) {
         cout << "Wrotng input, too big number" << endl;
         return;
 
@@ -138,7 +138,10 @@ void remove(string name, int count, string cell, struct Warehouse& warehouse) {
 
 int info(struct Warehouse& warehouse) {
     //заполнения склада
-    cout << "Load of warehouse: " << warehouse.current_number << " / " << warehouse.capacity << endl;
+    double current_number1 = warehouse.current_number;
+    double capacity2 = warehouse.capacity * 10;
+    double load = current_number1/capacity2;
+    cout << "Load of warehouse: " << load * 100 << " %" << endl;
 
     //процент заполнения каждой зоны
     cout << "Load of zone: " << endl;
@@ -201,8 +204,6 @@ int info(struct Warehouse& warehouse) {
 int main() {
     Warehouse wildberries{ 0, 64, 4, 8, 2, 1};
     create_space(&wildberries);
-    //add("Tomato", 4, "A821", wildberries);
-    //add("Tomato", 8, "A821", wildberries);
 
     cout << "Enter one of the commands:" << endl;
     cout << "\tADD - product, quantity and cell;" << endl;
