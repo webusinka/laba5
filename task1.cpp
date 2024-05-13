@@ -51,18 +51,36 @@ pair<int, int> search_index(int count, string cell, struct Warehouse& warehouse)
         zone_index = 3;
 
     } else {
-        cout << "Wrotng input";
+        cout << "Wrotng input" << endl;
         return result;
     }
 
     tmp = cell.substr(1, 1); //смещение по стеллажу
     index += (stoi(tmp) - 1) * warehouse.number_of_vertical_section * warehouse.number_of_shelves;
+    if (stoi(tmp) < 1 || stoi(tmp) > warehouse.number_of_shelves) {
+        cout << "Incorrect value for shelf offset." << endl;
+        result.first = -1;
+        result.second = -1;
+        return result;
+    }
 
     tmp = cell.substr(2, 1); //смещение по вертикальной секции
     index += (stoi(tmp) - 1) * warehouse.number_of_shelves;
+    if (stoi(tmp) < 1 || stoi(tmp) > warehouse.number_of_vertical_section) {
+        cout << "The value for the vertical section offset is incorrect." << endl;
+        result.first = -1;
+        result.second = -1;
+        return result;
+    }
 
     tmp = cell.substr(3, 1); //смещение по ячейке
     index += (stoi(tmp) - 1);
+    if (stoi(tmp) < 1 || stoi(tmp) > warehouse.number_of_shelves) {
+        cout << "Invalid value for cell offset." << endl;
+        result.first = -1;
+        result.second = -1;
+        return result;
+    }
 
     result.first = index;
     result.second = zone_index;
